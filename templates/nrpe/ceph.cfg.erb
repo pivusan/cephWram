@@ -1,0 +1,24 @@
+# Этот файл был создан puppet модулем ceph
+#
+# commands definition
+
+# Интегральные проверки
+command[check_ceph_health]=/usr/lib/nagios/plugins/ceph/check_ceph_health              -i <%= @clientid %> -k <%= @keyring %>
+command[check_ceph_mgr]=/usr/lib/nagios/plugins/ceph/check_ceph_mgr                    -i <%= @clientid %> -k <%= @keyring %>
+
+command[check_ceph_osd_df]=/usr/lib/nagios/plugins/ceph/check_ceph_osd_df              -i <%= @clientid %> -k <%= @keyring %> -W <%= @osddfwarning %> -C <%= @osddfcritical %>
+
+command[check_ceph_df]=/usr/lib/nagios/plugins/ceph/check_ceph_df                      -i <%= @clientid %> -k <%= @keyring %> -W <%= @dfwarning %> -C <%= @dfcritical %>
+
+command[check_ceph_df_<%= @ram_data %>]=/usr/lib/nagios/plugins/ceph/check_ceph_df     -i <%= @clientid %> -k <%= @keyring %> -W <%= @dfwarning %> -C <%= @dfcritical %> --pool <%= @ram_data %>
+command[check_ceph_df_<%= @ram_metadata %>]=/usr/lib/nagios/plugins/ceph/check_ceph_df -i <%= @clientid %> -k <%= @keyring %> -W <%= @dfwarning %> -C <%= @dfcritical %> --pool <%= @ram_metadata %>
+command[check_ceph_df_<%= @hdd_data %>]=/usr/lib/nagios/plugins/ceph/check_ceph_df     -i <%= @clientid %> -k <%= @keyring %> -W <%= @dfwarning %> -C <%= @dfcritical %> --pool <%= @hdd_data %>
+command[check_ceph_df_<%= @hdd_metadata %>]=/usr/lib/nagios/plugins/ceph/check_ceph_df -i <%= @clientid %> -k <%= @keyring %> -W <%= @dfwarning %> -C <%= @dfcritical %> --pool <%= @hdd_metadata %>
+
+# Локальные проверки, которые необходимо применять на некоторых серверах ceph
+command[check_ceph_mds_typefs]=/usr/lib/nagios/plugins/ceph/check_ceph_mds_typefs      -i <%= @clientid %> -k <%= @keyring %> --name <%= @hostnameib %>
+
+command[check_ceph_mon]=/usr/lib/nagios/plugins/ceph/check_ceph_mon                    -i <%= @clientid %> -k <%= @keyring %> --monid <%= @hostnameib %>
+
+# Локальные проверки, применимые на всех серверах ceph
+command[check_ceph_osd]=/usr/lib/nagios/plugins/ceph/check_ceph_osd                    -i <%= @clientid %> -k <%= @keyring %> --host <%= @hostnameib %> --crit <%= @numberfailedosd %> --out

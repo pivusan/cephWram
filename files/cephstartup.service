@@ -1,0 +1,20 @@
+# Этот файл был создан puppet модулем ceph
+# 
+
+[Unit]
+Description=Ceph startup script
+DefaultDependencies=no
+After=graphical.target
+Requires=graphical.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+Environment="CEPH_ARGS= --name client.cephadm --keyring=/etc/ceph/ceph.client.cephadm.keyring"
+WorkingDirectory=/home/cephadm/cephdeploy
+User=cephadm
+Group=cephadm
+ExecStart=/home/cephadm/cephdeploy/ceph_up.sh
+
+[Install]
+WantedBy=graphical.target

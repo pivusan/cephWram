@@ -1,0 +1,17 @@
+# Этот файл был создан puppet модулем ceph
+#
+[global]
+fsid = <%= @fsid %>
+mon_initial_members = <%= @all_mon_name_data.join(",") %>
+
+mon_host = <%= @all_mon_ip_data.join(",") %>
+
+auth_cluster_required = cephx
+auth_service_required = cephx
+auth_client_required = cephx
+
+mon_pg_warn_max_object_skew = -1
+mon_max_pg_per_osd = 300
+#
+mon_allow_pool_delete = true
+public_network = <%= @public_network_data %>/<%= @mask_public_network_data %>

@@ -1,0 +1,55 @@
+# Speed up or slow down osd backfilling
+
+[[_TOC_]]
+
+https://www.suse.com/support/kb/doc/?id=000019693
+
+
+Situation
+Customer needs to speed up or slow down osd backfilling.
+
+This may happen when osd(s) are stopped or removed from the cluster.
+It may also happenwhen osd(s) are added to the cluster. 
+
+Also see:
+https://docs.ceph.com/docs/master/dev/osd_internals/backfill_reservation/
+ 
+You can also set these values if you want a quick recovery for your cluster, helping OSDs to perform recovery faster.
+
+    osd max backfills: This is the maximum number of backfill operations allowed to/from OSD. The higher the number, the quicker the recovery, which might impact overall cluster performance until recovery finishes. 
+    osd recovery max active: This is the maximum number of active recover requests. Higher the number, quicker the recovery, which might impact the overall cluster performance until recovery finishes. 
+    osd recovery op priority: This is the priority set for recovery operation. Lower the number, higher the recovery priority. Higher recovery priority might cause performance degradation until recovery completes. 
+
+Keep in mind that changing these values can impact the performance of cluster.  Clients may see slower response.  
+
+Default Values:
+ceph-admin:~ # ceph config --show-config | egrep "osd_recovery_max_active|osd_recovery_op_priority|osd_max_backfills"
+osd_max_backfills = 1
+osd_recovery_max_active = 3
+osd_recovery_op_priority = 3
+Resolution
+The following command appears to be sufficient to speed up backfilling/recovery.  On the Admin node run:
+ceph tell 'osd.*' injectargs --osd-max-backfills=2 --osd-recovery-max-active=6
+or 
+ceph tell 'osd.*' injectargs --osd-max-backfills=3 --osd-recovery-max-active=9
+
+To set back to default, run:
+ceph tell 'osd.*' injectargs --osd-max-backfills=1 --osd-recovery-max-active=3
+
+"ceph config set" also works with SES 6:
+ceph config set osd osd_max_backfills 2
+ceph config set osd osd_recovery_max_active 3
+
+To set back to default run:
+ceph config rm osd osd_recovery_max_active
+ceph config rm osd osd_max_backfills
+
+Setting the values to high can cause osd's to restart, causing the cluster to become unstable.
+
+Monitor with "ceph -s".
+If osd's start restarting, then reduce the values.
+If clients are impacted by the recovery, reduce the values.
+To slow down  recovery, reduce values to default.  
+When cluster is healty set values back to default. 
+Cause
+Cluster is backfilling and the administrator wishes to over ride defaults to speed up or slow down backfilling.  

@@ -1,0 +1,5 @@
+# Этот файл был создан puppet модулем ceph
+#
+StrictHostKeyChecking no
+UserKnownHostsFile=/dev/null
+LogLevel ERROR

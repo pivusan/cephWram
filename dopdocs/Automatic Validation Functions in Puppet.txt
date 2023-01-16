@@ -1,0 +1,91 @@
+Automatic Validation Functions
+
+These function calls accept an input and automatically cause the Puppet run to fail with
+a useful error if the input does not match the function calls validation critera. For ex‐
+ample:
+
+Example 4-27. Input validation using function calls and conditional logic
+validate_absolute_path('/tmp/test.txt')
+validate_absolute_path() is useful for ensuring that that a supplied path is valid and
+fully qualified.
+
+validate_re() validate input against a regular expression. This can be used to validate
+any string within reason.
+validate_re($group, '^[_.A-Za-z0-9][-\@_.A-Za-z0-9]*\$?$')
+
+validate_slength() Validate that a string or elements of an array are not longer than
+a specified character count.
+
+validate_array() , validate_bool() , validate_hash() , validate_string() vali‐
+date that the argument passed is of the correct data type.
+
+validate_augeas() Validate the content passed to this function call using an augeas
+lens, and optionally ensure that certain nodes do not exist in the supplied configuration.
+
+validate_cmd() Validate input string using an external command. Be cautious, as this
+validation function could potentially be used to execute arbitrary code on your Pup‐
+petmaster.
+assert_type introduced in Puppet 4 provides a more generalized way of validating an
+objects type. Although not required, it allows you to define a block to be called if the
+
+
+
+Other Useful Functions for Validation
+These function calls will return true or false depending on the supplied data. Using
+conditional logic, it’s fairly simple to fail catalog compilation if one of these tests returns
+a negative value.
+
+For example:
+
+Example 4-28. Input validation using function calls and conditional logic
+unless is_domain_name($domain) {
+fail("'${domain}' does not appear to be a valid domain name")
+}
+is_domain_name() is_ip_address() is_mac_address() validate that the input is a
+syntactically valid domain name, IP address, or mac address. These function calls do
+not check to see if the input is actually reachable on the wire.
+
+is_numeric() is_float() is_integer() Returns true if the supplied value is a number,
+is a floating point number, or is an integer respectively.
+unless is_numeric($listen) {
+fail("${module_name}: listen ${listen} must be an integer")
+}
+unless $listen >= 0 and $listen <= 65534 {
+fail("${module_name}: listen ${listen} must be a port between 0 and 65534")
+}
+
+has_interface_with() has_ip_address() has_ip_network() Uses the interfaces facts
+to validate that the supplied IP address, network name, or interface is present on the
+node. Because these tests rely on untrusted client supplied facts, it is possible to spoof
+them.
+
+grep() has_key() member() Test if the supplied value is part of a data structure. These
+tests are very useful for ensuring that a supplied value is a member of an explicit list of
+values.
+
+Example 4-29. Input validation using the member() function
+$ensure_values = ['present','absent']
+unless member($ensure_values, $ensure) {
+fail('$ensure must be 'present' or 'absent')
+}
+
+Catalog tests
+defined() defined_with_params() ensure_packages() ensure_resource()
+These function calls either return a boolean value if a resource exists in the catalog, or
+they check if a resource exists, and define it if it does not.
+At first glance, these functions appear to be a useful way to solve duplicate resource
+declaration issues.
+
+Example 4-30. Using defined() to see if Java is in the catalog
+unless defined(Package['openjdk']) {
+package { 'openjdk':
+ensure => 'installed',}}
+
+unless validate_legacy(Integer, 'validate_integer', $gid_ceph) {
+  fail("${module_name} in manifest ${name}: $uid_cephadm,$gid_cephadm,$uid_ceph,$gid_ceph,$osd_ram_size,$k,$m,$max_mds_fss, must be an integer")
+}
+
+
+
+
+
